@@ -1,0 +1,135 @@
+﻿@model SistemaPedidos.Models.DTO.ProductoViewModel
+
+@section Migas{
+    <li class="active">Editar producto</li>
+}
+
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-9 margin-top-0">
+        <h1 class="page-title text-align-center txt-color-blueDark">
+            <b>   &nbsp;</b>
+        </h1>
+    </div>
+    <div class="col-xs-12 col-sm-5 col-md-5 col-lg-3 margin-top-0">
+        <ul id="sparks">
+            <li class="sparks-info">
+                <a href="@Url.Action("Productos", "Home")" btn btn-primary" onclick="cargando()"><i class="fa fa-arrow-left"></i> Regresar </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div id="content" class="well no-padding">
+            <form asp-action="EditarProducto" method="post" novalidate="novalidate" class="smart-form client-form">
+                <header>
+                    <b>Editar producto</b>
+                </header>
+                <input type="hidden" asp-for="ItemId">
+                <input type="hidden" asp-for="VendorId">
+                <fieldset>
+                    <section>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    </section>
+
+                    <section class="col col-sm-4">
+                        <label class="label">Categor&iacute;a</label>
+                        <label class="input">
+                            <i class="icon-append fa fa-file-text"></i>
+                            <input asp-for="Category" placeholder="Categoría">
+                            <b class="tooltip tooltip-bottom-right">Ingrese los categor&iacute;a</b>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </label>
+                    </section>
+
+                    <section class="col col-sm-4">
+                        <label class="label">SKU</label>
+                        <label class="input">
+                            <i class="icon-append fa fa-file-text"></i>
+                            <input type="text" readonly asp-for="SKU" placeholder="SKU">
+                            <b class="tooltip tooltip-bottom-right">Ingrese el SKU</b>
+                            <span asp-validation-for="SKU" class="text-danger"></span>
+                        </label>
+                    </section>
+
+                    <section class="col col-sm-4">
+                        <label class="label">Vendedor SKU</label>
+                        <label class="input">
+                            <i class="icon-append fa fa-file-text"></i>
+                            <input type="text" asp-for="VendorSKU" placeholder="Vendedor SKU">
+                            <b class="tooltip tooltip-bottom-right">Ingrese el Vendedor SKU</b>
+                            <span asp-validation-for="VendorSKU" class="text-danger"></span>
+                        </label>
+                    </section>
+
+                    <section class="col col-sm-12">
+                    </section>
+
+                    <section class="col col-sm-4">
+                        <label class="label">Precio</label>
+                        <label class="input">
+                            <i class="icon-append fa fa-file-text"></i>
+                            <input type="text" asp-for="Price" value="@string.Format("{0:F}",Model.Price)"   placeholder="Precio">
+                            <b class="tooltip tooltip-bottom-right">Ingrese el precio</b>
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </label>
+                    </section>
+
+                    <section class="col col-sm-4">
+                        <label class="label">% IVA</label>
+                        <label class="input">
+                            <i class="icon-append fa fa-file-text"></i>
+                            <input type="text"  readonly asp-for="TaxPercent" placeholder="Porciento">
+                            <b class="tooltip tooltip-bottom-right">Ingrese el porciento</b>
+                            <span asp-validation-for="TaxPercent" class="text-danger"></span>
+                        </label>
+                    </section>
+
+                    <section class="col col-sm-4">
+                        <label class="label">Descripci&oacute;n</label>
+                        <label class="input">
+                            <i class="icon-append fa fa-file-text"></i>
+                            <input type="text" readonly asp-for="ItemDescription" placeholder="Descripción">
+                            <b class="tooltip tooltip-bottom-right">Ingrese la descripci&oacute;n</b>
+                            <span asp-validation-for="ItemDescription" class="text-danger"></span>
+                        </label>
+                    </section>
+
+                    <section class="col col-sm-12">
+                    </section>
+
+                    <section class="col col-sm-8">
+                        <label class="label">Comentario Agente</label>
+                        <label class="input">
+                            <i class="icon-append fa fa-file-text"></i>
+                            <input type="text" asp-for="CommentsForAgent" asp-format="{0:C0}" placeholder="Comentario Agente">
+                            <b class="tooltip tooltip-bottom-right">Ingrese el comentario agente</b>
+                            <span asp-validation-for="CommentsForAgent" class="text-danger"></span>
+                        </label>
+                    </section>
+
+                    <section class="col col-sm-4">
+                        <label class="label">Estado</label>
+                        <label class="checkbox">
+                            <input type="checkbox" asp-for="IsActive" class="form-control">
+                            <i></i> ¿Activo?
+                            <span asp-validation-for="IsActive" class="text-danger"></span>
+                        </label>
+                    </section>
+
+                </fieldset>
+
+                <footer>
+                    <button type="submit" id="btn-guardar" class="btn btn-primary">
+                        Procesar
+                    </button>
+                </footer>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+

@@ -1,0 +1,81 @@
+@using SmartAdmin.Seed.Configuration
+@using SmartAdmin.Seed.Extensions
+@inject IOptions<SmartSettings> Settings
+<!-- Left panel : Navigation area -->
+<!-- Note: This width of the aside area can be adjusted through LESS variables -->
+<aside id="left-panel">
+    <!-- User info -->
+    
+    <!-- end user info -->
+    <!-- NAVIGATION : This navigation is also responsive-->
+    <nav>
+        <!--
+        NOTE: Notice the gaps after each icon usage <i></i>..
+        Please note that these links work a bit different than
+        traditional href="" links. See documentation for details.
+        -->
+
+        <ul>
+            <li is-active-route asp-controller="Home">
+                <a href="#" title="Dashboard">
+                    <i class="fa fa-lg fa-fw fa-home">
+                    </i> <span class="menu-item-parent">Pedidos</span>
+                </a>
+                <ul>
+                    <li is-active-route asp-controller="Home" asp-action="Index">
+                        <a asp-controller="Home" asp-action="Index" title="Pedidos sin procesar">
+                            <span class="menu-item-parent">Pedidos sin procesar</span>
+                        </a>
+                    </li>
+                    <li is-active-route asp-controller="Home" asp-action="PedidosHistoricos">
+                        <a asp-controller="Home" onclick="cargando()" asp-action="PedidosHistoricos" title="Pedidos hist&#243ricos">
+                            <i class=""></i> <span>Pedidos hist&#243ricos</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li is-active-route asp-controller="Home" asp-action="Productos">
+                <a href="#" title="Productos">
+                    <i class="fa fa-lg fa-fw fa-tags"></i> <span class="menu-item-parent">Productos</span>
+                </a>
+
+                <ul>
+                    <li is-active-route asp-controller="Home" asp-action="Productos">
+                        <a asp-controller="Home" onclick="cargando()" asp-action="Productos" title="Productos">
+                            <i class=""></i> <span>Productos</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li is-active-route asp-controller="Home" asp-action="Anuncios">
+                <a href="#" title="informaci&oacute;n">
+                    <i class="fa fa-lg fa-fw fa-bullhorn"></i> <span class="menu-item-parent">Anuncios</span>
+                </a>
+                <ul>
+                    <li is-active-route asp-controller="Home" asp-action="Anuncios">
+                        <a asp-controller="Home" onclick="cargando()" asp-action="Anuncios" title="Anuncios">
+                            <i class=""></i> <span>Anuncios</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li is-active-route asp-controller="Home"asp-action="PanelInformacion">
+                <a href="#" title="informaci&oacute;n">
+                    <i class="fa fa-lg fa-fw fa-line-chart"></i> <span class="menu-item-parent">Reportes</span>
+                </a>
+                <ul>
+                    <li is-active-route asp-controller="Home" asp-action="PanelInformacion">
+                        <a asp-controller="Home" onclick="cargando()" asp-action="PanelInformacion" title="Panel de informaci&oacute;n">
+                            <i class=""></i> <span>Panel de informaci&oacute;n</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <span class="minifyme" data-action="minifyMenu">
+        <i class="fa fa-arrow-circle-left hit"></i>
+    </span>
+</aside>
+<!-- END NAVIGATION -->

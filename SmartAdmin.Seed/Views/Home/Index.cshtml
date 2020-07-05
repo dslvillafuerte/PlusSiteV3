@@ -1,0 +1,306 @@
+﻿
+@section Migas{
+    <li class="active">Pedidos sin procesar</li>
+}
+
+<section id="widget-grid" class="">
+    <!-- row -->
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken " id="wid-id-0" data-widget-deletebutton="false" data-widget-collapsed="false" data-widget-colorbutton="false" data-widget-editbutton="false">
+                <header style="background-color:#eb5c27;border:#eb5c27">
+                    <span class="widget-icon">
+                        <i class="fa fa-table"></i>
+                    </span>
+                    <h2>Lista de pedidos</h2>
+
+                </header>
+                <div>
+
+                    <div class="jarviswidget-editbox">
+                    </div>
+                    <div class="widget-body no-padding">
+                        <table id="tbOrdenes" data-page-length="50" class="table table-striped table-bordered table-hover" style="border-color:#eb5c27" width="100%">
+                            <thead>
+                                <tr>
+
+                                    <th data-hide="phone" style="text-align:center"> N&uacute;mero de &oacute;rden</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Nombre del cliente</th>
+                                    <th style="text-align:center">Tel&eacute;fono</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Total</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Costo env&iacute;o</th>
+                                    <th data-hide="phone,tablet" style="text-align: center">Hora despacho aprox.</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Hora despacho real</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Tiempo (min.)</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Estado</th>
+                                    <th style="text-align:center">Opciones</th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                    </div>
+                    <!-- end widget content -->
+
+                </div>
+                <!-- end widget div -->
+
+            </div>
+        </article>
+    </div>
+</section>
+
+<!-- end widget grid -->
+@section Scripts {
+    <script>
+        var cantidadCiclos = 0;
+
+        pedidosActuales();
+        //mostrarLoadingPanel("content", "");
+        function pedidosActuales(){
+
+             cantidadCiclos = cantidadCiclos + 1;
+
+            if (cantidadCiclos > 10) {
+                location.href = '@Url.Action("Index")';
+            }
+            mostrarLoadingPanel("content", "");
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("PedidosActuales","Home")',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.estado == true) {
+                        LoadCurrentReport(data.lista);
+                        if (data.procesar > 0) {
+                            mostrarNotificacion("Aviso", "Existen pedidos sin procesar.")
+                        };
+                    } else
+                    {
+                        if (data.sesionExpirada == true) {
+                            mostrarNotificacion("Error", "Su sesión ha expirado");
+                            location.href = '@Url.Action("Login","Account")';
+                            return;
+                        }
+                        else
+                        {
+                            mostrarNotificacion("Error", data.mensaje);
+                            $("#content").waitMe("hide");
+                            setTimeout(function () { pedidosActuales(); }, 50000);
+                        }
+
+                    }
+                }, complete: function (data) {
+                    $("#content").waitMe("hide");
+                    setTimeout(function(){pedidosActuales();}, 50000);
+
+                },
+                error: function (ex) {
+                   mostrarNotificacion("Error", ex);
+                   location.href = '@Url.Action("Index")';
+                }
+            });
+        }
+
+        function LoadCurrentReport(oResults) {
+
+            //Load  datatable
+            var oTblReport = $("#tbOrdenes")
+            oTblReport.DataTable({
+                "destroy": true,
+                "searching": false,
+                "paging":   false,
+                "ordering": false,
+                "info": false,
+                 "language": {
+                    "emptyTable": "No hay información",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                },
+                "data": oResults,
+                "columns": [
+                    { data: 'orderNumber' },
+                    { data: 'customerName' },
+                    { data: 'customerMobile' },
+                    {
+                        data: 'totalOrder',
+                        render: $.fn.dataTable.render.number( ',', '.', 2,'$' )
+                    },
+                    {
+                        data: 'shippingValue',
+                        render: $.fn.dataTable.render.number( ',', '.', 2,'$' )
+                    },
+                    {
+                        data: 'dispatchAproxTime',
+                        render: function (data, type, row) {
+                            if (data == null) {
+                                return "";
+                            }
+                            return moment(data).format("YYYY/MM/DD HH:mm:ss");
+                        }
+                    },
+                    {
+                        data: 'orderDispatch',
+                        render: function (data, type, row) {
+                            if (data == null) {
+                                return "";
+                            }
+                            return moment(data).format("YYYY/MM/DD HH:mm:ss");
+                        }
+                    },
+                    { data: 'dispatchMinCount' },
+                    { data: 'orderStatus' },
+                    {
+                        className: "text-center",
+                        data: "salesOrderId",
+                        title: "Opciones",
+                        render: function (data, type, row) {
+
+
+                            if (row.orderStatus = "Por Pagar") {
+
+                                var myUrl = '@Url.Action("ProcesarPedido", "Home")?id=' + data;
+                                return '<a href=\"javascript:void(0);\" class=\"btn btn-primary center fa fa-motorcycle btn-sm\"  onclick = \"ProcesarConEnvio(' + data + ');\"></a> <a href=\"javascript:void(0);\" class=\"btn btn-danger center fa fa-motorcycle btn-sm\"  onclick = \"ProcesarSinEnvio(' + data + ');\"></a>';
+                            } else {
+
+                                if (row.orderStatus != "Pendiente") {
+                                    return '<p></p>';
+
+                                } else {
+                                    var myUrl = '@Url.Action("ProcesarPedido", "Home")?id=' + data;
+                                    return '<a href=\"' + myUrl + '\" class=\"btn btn-primary center fa fa-check btn-sm\"  onclick = \"cargando();\"> Procesar</a>';
+                                }
+                            }
+                        //return '<a href=\"LinkedAccountsDetails/' + data + '\">Edit</a>';
+
+                    }
+                    }
+                ],
+                rowCallback: function(row, data, index) {
+                    if (data.orderStatus == "Despachado") {
+                        $("td", row).addClass("bg-color-greenLight");
+                    }
+                    if (data.orderStatus == "Pendiente") {
+                        $("td", row).addClass("bg-color-redLight");
+                    }
+                    if (data.orderStatus == "En Proceso") {
+                        $("td", row).addClass("bg-color-orange");
+                    }
+                }
+            });
+        }
+
+
+        $('#tbOrdenes tbody').on('click', 'button', function () {
+            debugger;
+            var data = oTblReport.row($(this).parents('tr')).data();
+            var url = "/UpdateMember/Edit/" + data.id;
+            window.location.href = url;
+        });
+
+         function redireccionarIndex()
+        {
+            location.href = '@Url.Action("Index")';
+        };
+
+         function ProcesarConEnvio(id)
+         {
+
+             var r = confirm("Está seguro de procesar el pedido [Con costo de envío] !");
+
+             if (r == true) {
+                 mostrarLoadingPanel("content", "");
+                 var myUrl = '@Url.Action("ProcesarPedidoEnvio", "Home")?id=' + id + '&tipo=AceptarConEnvio';
+                 $.ajax({
+                     type: 'POST',
+                     url: myUrl,
+                     dataType: 'json',
+                     success: function (data) {
+                         if (data.estado == true) {
+                             mostrarNotificacion("Satisfactorio", "El pedido fue procesado satisfactoriamente.")
+                             setTimeout(function () { redireccionarIndex(); }, 1000);
+                         } else {
+                             if (data.estado == false) {
+                                 mostrarNotificacion("Error", "El pedido no fue procesado satisfactoriamente.");
+                                 $("#content").waitMe("hide");
+                             } else {
+                                 if (data.sesionExpirada == true) {
+                                     mostrarNotificacion("Error", "Su sesión ha expirado");
+                                     location.href = '@Url.Action("Login","Account")';
+                                     return;
+                                 }
+                             }
+                         }
+                     }, complete: function (data) {
+                         $("#content").waitMe("hide");
+                     },
+                     error: function (ex) {
+                         mostrarNotificacion("Error", ex);
+                         location.href = '@Url.Action("Index")';
+                     }
+                 });
+             }
+         }
+
+
+
+        function ProcesarSinEnvio(id)
+        {
+
+
+            var r = confirm("Está seguro de procesar el pedido [Sin costo de envío] !");
+
+            if (r == true) {
+
+                mostrarLoadingPanel("content", "");
+                var myUrl = '@Url.Action("ProcesarPedidoEnvio", "Home")?id=' + id + '&tipo=AceptarSinEnvio';
+                 $.ajax({
+                    type: 'POST',
+                    url: myUrl,
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.estado == true) {
+                            mostrarNotificacion("Satisfactorio", "El pedido fue procesado satisfactoriamente.")
+                            setTimeout(function(){redireccionarIndex();}, 1000);
+                        } else
+                        {
+                            if (data.estado == false) {
+                                mostrarNotificacion("Error", "El pedido no fue procesado satisfactoriamente.");
+                                $("#content").waitMe("hide");
+                            } else {
+                                if (data.sesionExpirada == true) {
+                                    mostrarNotificacion("Error", "Su sesión ha expirado");
+                                    location.href = '@Url.Action("Login","Account")';
+                                    return;
+                                }
+                            }
+
+                        }
+                    }, complete: function (data) {
+                        $("#content").waitMe("hide");
+                    },
+                    error: function (ex) {
+                       mostrarNotificacion("Error", ex);
+                       location.href = '@Url.Action("Index")';
+                    }
+                 });
+
+            }
+        };
+
+
+         loadScript("/js/plugin/datatables/jquery.dataTables.min.js",
+            function () {
+                loadScript("/js/plugin/datatables/dataTables.colVis.min.js",
+                    function () {
+                        loadScript("/js/plugin/datatables/dataTables.tableTools.min.js",
+                            function () {
+                                loadScript("/js/plugin/datatables/dataTables.bootstrap.min.js",
+                                    function () {
+                                        loadScript("/js/plugin/datatable-responsive/datatables.responsive.min.js",
+                                            pagefunction);
+                                    });
+                            });
+                    });
+            });
+    </script>
+}

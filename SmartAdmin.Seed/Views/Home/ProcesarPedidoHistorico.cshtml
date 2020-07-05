@@ -1,0 +1,65 @@
+﻿@model SistemaPedidos.Models.DTO.SolicitudProcesarPedido
+
+@section Migas{
+    <li class="active">Procesar pedido</li>
+}
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-9 margin-top-0">
+        <h1 class="page-title text-align-center txt-color-blueDark">
+            <b>   &nbsp;</b>
+        </h1>
+    </div>
+    <div class="col-xs-12 col-sm-5 col-md-5 col-lg-3 margin-top-0">
+        <ul id="sparks">
+            <li class="sparks-info">
+                <a href="@Url.Action("PedidosHistoricos", "Home", new {fecha=Model.Fecha})" btn btn-primary" onclick="cargando()"><i class="fa fa-arrow-left"></i> Regresar </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="well padding-10">
+            <legend><h4>Detalle</h4> </legend>
+            <h5 class="margin-top-0">Nombre:&nbsp;&nbsp;&nbsp;<b>@Model.DetallePedidoLista.customerName</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tel&eacute;fono:&nbsp;&nbsp;&nbsp;<b> @Model.DetallePedidoLista.customerMobile</b></h5><hr />
+            
+            <div class="row">
+                @foreach (var item in Model.DetallePedidoLista.orderDetails)
+                {
+                    <div class="col-lg-3">
+
+                        <ul class="list-group no-margin">
+
+                            <li class="list-group-item">
+
+                                <a href=""><legend> @item.sku</legend> </a>
+                                <a href=""><b>Nombre: </b>@item.productName  </a>
+                                <br />
+                                <a href=""><b>Cantidad:</b> @item.quantity  </a>
+                                <br />
+                                <a href=""><b>Total:</b> $ @item.total  </a>
+                                <br />
+                                <a href=""><b> Descripci&oacute;n </b> </a><br />
+                                <a href=""><p class="JustifyFull">@item.comments</p></a>
+                                <hr />
+                            </li>
+                        </ul>
+                        <br />
+                    </div>
+                }
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+<!-- /.modal -->
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+<script type="text/javascript">
+
+</script>
+}
+

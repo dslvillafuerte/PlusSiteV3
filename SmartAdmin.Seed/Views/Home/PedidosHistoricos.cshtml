@@ -1,0 +1,244 @@
+﻿@model SistemaPedidos.Models.DTO.PedidosHistoricosViewModel
+@using Newtonsoft.Json
+
+@section Migas{
+    <li class="active">Pedidos hist&oacute;ricos </li>
+}
+
+<section id="widget-grid" class="">
+
+    <div class="row">
+        <div class="col-xs-10 pull-right col-sm-2 col-md-2 col col-lg-6">
+            <div class="well padding-10">
+                <h5 class="margin-top-0"><b> Buscar</b><i class="pull-right fa fa-search"></i></h5>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ul class="list-group no-margin">
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <label class="input col col-lg-4">
+                                        <label>Fecha</label>
+                                        <input readonly type="datetime" id="FechaInicio" placeholder="Ingrese la fecha" title="Ingrese la fecha inicial" class="datepicker form-control" data-dateformat="yy/mm/dd">
+                                        <b class="tooltip tooltip-bottom-right">Ingrese la fecha</b>
+                                        <span id="mFechaAnalisis" class="text-danger"></span>
+                                    </label>
+                                    <div class="col col-lg-1"></div>
+
+                                    <div class="col col-lg-2">
+                                        <label>&nbsp;</label>
+                                        <a id="btBuscar" onclick="filtrar()" title="Buscar" class="btn btn-default btn-lg btn-circle  fa fa-search fa-lg text-info">
+                                        </a>
+                                    </div>
+                                    <br />
+                                    <br />
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- row -->
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken" id="wid-id-0" data-widget-deletebutton="false" data-widget-collapsed="false" data-widget-colorbutton="false" data-widget-editbutton="false">
+                <header style="background-color:#eb5c27;border:#eb5c27">
+                    <span class="widget-icon">
+                        <i class="fa fa-table"></i>
+                    </span>
+                    <h2>Lista de pedidos</h2>
+
+                </header>
+                <div>
+                    <div class="jarviswidget-editbox">
+                    </div>
+                    <div class="widget-body no-padding">
+                        <table id="tbOrdenes" data-page-length="50" class="table table-striped table-bordered table-hover" style="border:#eb5c27" width="100%">
+                            <thead>
+                                <tr>
+                                    <th data-hide="phone" style="text-align:center"> N&uacute;mero de &oacute;rden</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Nombre del cliente</th>
+                                    <th style="text-align:center">Tel&eacute;fono</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Total</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Costo env&iacute;o</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Hora despacho aprox.</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Hora despacho real</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Tiempo (min.)</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Estado</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Opciones</th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                    </div>
+                    <!-- end widget content -->
+
+                </div>
+                <!-- end widget div -->
+
+            </div>
+        </article>
+    </div>
+</section>
+
+<!-- end widget grid -->
+@section Scripts {
+    <script>
+        var data = @Html.Raw(JsonConvert.SerializeObject(this.Model));
+         
+        var fInicio = data.FechaInicio;
+        var fechaFormateada = moment(fInicio).format("YYYY/MM/DD");
+         $("#FechaInicio").val(fechaFormateada);
+        var fechaActual = $("#FechaInicio").val();
+        
+        pedidosActuales(fechaActual);
+        
+        function filtrar() {
+
+
+            var f= $("#FechaInicio").val();
+            if (f=="" || f==null)
+            {
+                mostrarNotificacion("Aviso", "Ingrese la fecha por favor.");
+                return;
+
+            };
+
+            fechaActual =$("#FechaInicio").val(); //moment($("#FechaInicio").val(), "DD/MM/YYYY").format("YYYY/MM/DD");
+
+            mostrarLoadingPanel("content", "");
+            $("#btBuscar").prop("disabled", true);
+            $("#btBuscar").removeClass("fa-search");
+            $("#btBuscar").addClass("fa-spinner");
+            $("#btBuscar").addClass("fa-spin");
+            pedidosActuales();
+            $("#btBuscar").addClass("fa fa-search");
+        };
+        //mostrarLoadingPanel("content", "");
+        function pedidosActuales() {
+             mostrarLoadingPanel("content", "");
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("PedidosHistoricos","Home")',
+                data: { fecha: fechaActual },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.estado == true) {
+
+                            LoadCurrentReport(data.lista);
+
+                    } else
+                    {
+                        if (data.sesionExpirada == true) {
+                            location.href = '@Url.Action("Login","Account")';
+                            return;
+                        }
+                        else
+                        {
+                             mostrarNotificacion("Error", data.mensaje);
+                            $("#content").waitMe("hide");
+                        }
+
+                    }
+                }, complete: function (data) {
+                    $("#btBuscar").removeClass("fa-spinner");
+                    $("#btBuscar").removeClass("fa-spin");
+                    $("#btBuscar").addClass("fa-search");
+                    $("#btBuscar").prop("disabled", false);
+                    $("#content").waitMe("hide");
+                },
+                error: function (ex) {
+                   mostrarNotificacion("Error", ex);
+                   location.href = '@Url.Action("Index")';
+                }
+            });
+        }
+
+        function LoadCurrentReport(oResults) {
+
+            //Load  datatable
+            var oTblReport = $("#tbOrdenes")
+            oTblReport.DataTable({
+                "destroy": true,
+                "searching": false,
+                "paging":   false,
+                "ordering": false,
+                "info": false,
+                "language": {
+                    "emptyTable": "No hay información",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                },
+                "data": oResults,
+                "columns": [
+                    { data: 'orderNumber' },
+                    { data: 'customerName' },
+                    { data: 'customerMobile' },
+                    {
+                        data: 'totalOrder',
+                        render: $.fn.dataTable.render.number( ',', '.', 2,'$' )
+                    },
+                    {
+                        data: 'shippingValue',
+                        render: $.fn.dataTable.render.number( ',', '.', 2,'$' )
+                    },
+                    {
+                        data: 'dispatchAproxTime',
+                        render: function (data, type, row) {
+                            if (data == null) {
+                                return "";
+                            }
+                            return moment(data).format("YYYY/MM/DD HH:mm:ss");
+                        }
+                    },
+                    {
+                        data: 'orderDispatch',
+                        render: function (data, type, row) {
+                            if (data == null) {
+                                return "";
+                            }
+                            return moment(data).format("YYYY/MM/DD HH:mm:ss");
+                        }
+                    },
+                    { data: 'dispatchMinCount' },
+                    { data: 'orderStatus' },
+                    {
+                        className: "text-center",
+                        data: "salesOrderId",
+                        title: "Opciones",
+                        render: function (data, type, row) {
+                            var myUrl = '@Url.Action("ProcesarPedidoHistorico", "Home")?id=' + data + '&fecha=' + fechaActual;
+                                return '<a href=\"' + myUrl + '\" class=\"btn btn-primary center fa fa-check btn-sm\"  onclick = \"cargando();\"> Detalle</a>';
+                        }
+                    }
+                ]
+            });
+        }
+
+
+        $('#tbOrdenes tbody').on('click', 'button', function () {
+            debugger;
+            var data = oTblReport.row($(this).parents('tr')).data();
+            var url = "/UpdateMember/Edit/" + data.id;
+            window.location.href = url;
+        });
+
+
+         loadScript("/js/plugin/datatables/jquery.dataTables.min.js",
+            function () {
+                loadScript("/js/plugin/datatables/dataTables.colVis.min.js",
+                    function () {
+                        loadScript("/js/plugin/datatables/dataTables.tableTools.min.js",
+                            function () {
+                                loadScript("/js/plugin/datatables/dataTables.bootstrap.min.js",
+                                    function () {
+                                        loadScript("/js/plugin/datatable-responsive/datatables.responsive.min.js",
+                                            pagefunction);
+                                    });
+                            });
+                    });
+            });
+    </script>
+}

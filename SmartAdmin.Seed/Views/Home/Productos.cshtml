@@ -1,0 +1,168 @@
+﻿@model SistemaPedidos.Models.DTO.SolicitudProcesarAnuncio
+
+@section Migas{
+    <li class="active">Productos</li>
+}
+
+<section id="widget-grid" class="">
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-darken " id="wid-id-0" data-widget-deletebutton="false" data-widget-collapsed="false" data-widget-colorbutton="false" data-widget-editbutton="false">
+                <header style="background-color:#eb5c27;border:#eb5c27">
+                    <span class="widget-icon">
+                        <i class="fa fa-table"></i>
+                    </span>
+                    <h2>Lista de productos</h2>
+
+                </header>
+                <div>
+
+                    <div class="jarviswidget-editbox">
+                    </div>
+                    <div class="widget-body no-padding">
+                        <table id="tbOrdenes" data-page-length="50" class="table table-striped table-bordered table-hover" style="border-color:#eb5c27" width="100%">
+                            <thead>
+                                <tr>
+                                    <th data-hide="phone" style="text-align:center">Categor&iacute;a</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">SKU</th>
+                                    <th style="text-align:center">Vendedor SKU</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Precio</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">% IVA</th>
+                                    <th data-hide="phone" style="text-align:center">Descripci&oacute;n</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Comentario agente</th>
+                                    <th style="text-align:center">Estado</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Opciones</th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+
+        productos();
+
+        function productos() {
+             mostrarLoadingPanel("content", "");
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("ObtenerProductos","Home")',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.estado == true) {
+                        mostrarLoadingPanel("content", "");
+                        LoadCurrentReport(data.lista);
+                    } else
+                    {
+                        if (data.sesionExpirada == true) {
+                            location.href = '@Url.Action("Login","Account")';
+                            return;
+                        }
+                        else
+                        {
+                             mostrarNotificacion("Error", data.mensaje);
+                            $("#content").waitMe("hide");
+                        }
+
+                    }
+                }, complete: function (data) {
+                    $("#content").waitMe("hide");
+                },
+                error: function (ex) {
+                   mostrarNotificacion("Error", ex);
+                   location.href = '@Url.Action("Productos")';
+                }
+            });
+        }
+
+        function LoadCurrentReport(oResults) {
+
+            //Load  datatable
+            var oTblReport = $("#tbOrdenes")
+            oTblReport.DataTable({
+                "destroy": true,
+                "searching": false,
+                "paging": true,
+                "ordering": false,
+                "info": true,
+                "language": {
+                    "emptyTable": "No hay información",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                    "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                    "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+                    "lengthMenu": "Mostrar _MENU_ Entradas",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "zeroRecords": "Sin resultados encontrados",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                },
+                "data": oResults,
+                "columns": [
+                    { data: 'category' },
+                    { data: 'sku' },
+                    { data: 'vendorSku' },
+                    {
+                        data: 'price',
+                        render: $.fn.dataTable.render.number( ',', '.', 2,'$' )
+                    },
+                    { data: 'taxPercent' },
+                    { data: 'itemDescription' },
+                    { data: 'commentsForAgent' },
+                    {
+                        data: 'isActive',
+                        render: function (data, type, row) {
+                            if (data == true) {
+                                return "Activo";
+                            };
+                            if (data == false) {
+                                return "Inactivo";
+                            };
+                            return "No definido";
+                        }
+                    },
+                    {
+                        className: "text-center",
+                        data: "itemId",
+                        title: "Opciones",
+                        render: function (data, type, row) {
+                            var myUrl = '@Url.Action("EditarProducto", "Home")?id=' + data;
+                            return '<a href=\"' + myUrl + '\" class=\"btn btn-primary center fa fa-pencil-square-o btn-sm\"  onclick = \"cargando();\"></a>';
+                        }
+                    }
+                ],
+                rowCallback: function (row, data, index) {
+                    if (data.isActive == true) {
+                        $("td", row).addClass("bg-color-greenLight");
+                    }
+                }
+            });
+        }
+
+         loadScript("/js/plugin/datatables/jquery.dataTables.min.js",
+            function () {
+                loadScript("/js/plugin/datatables/dataTables.colVis.min.js",
+                    function () {
+                        loadScript("/js/plugin/datatables/dataTables.tableTools.min.js",
+                            function () {
+                                loadScript("/js/plugin/datatables/dataTables.bootstrap.min.js",
+                                    function () {
+                                        loadScript("/js/plugin/datatable-responsive/datatables.responsive.min.js",
+                                            pagefunction);
+                                    });
+                            });
+                    });
+            });
+    </script>
+}
+

@@ -1,0 +1,35 @@
+﻿@model SistemaPedidos.Models.DTO.RespuestaLoginUsuarioZoho
+@section Migas{
+    <li class="active">Panel de informaci&oacute;n</li>
+}
+
+<section id="widget-grid" class="">
+
+    @{
+        var d = "https://analytics.zoho.com/open-view/2229490000000068033/7e8e05d0734cb85ff2a16cc4b519f77a?ZOHO_CRITERIA=%22Order%22.%22VendorId%22%3D" + Model.vendorId;
+    }
+
+    <!-- row -->
+
+
+    <iframe onload="frameLoaded();" id="penelInformacionId" frameborder=0 width="100%" height="600" src=""></iframe>
+
+
+</section>
+
+<!-- end widget grid -->
+@section Scripts {
+
+    <script type="text/javascript">
+        mostrarLoadingPanel("content", "");
+        $('#penelInformacionId').attr('src', "@d");
+        function frameLoaded() {
+             $("#content").waitMe("hide");
+        };
+
+        
+      
+    </script>
+    
+
+}
