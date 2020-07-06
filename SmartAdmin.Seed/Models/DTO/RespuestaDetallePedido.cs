@@ -82,6 +82,13 @@ namespace SistemaPedidos.Models.DTO
         /// <summary>
         /// 
         /// </summary>
+       public string customerIdentification { get; set; }
+        public string customerAddress { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string email { get; set; }
         public List<OrderDetailsItem> orderDetails { get; set; }
     }
 

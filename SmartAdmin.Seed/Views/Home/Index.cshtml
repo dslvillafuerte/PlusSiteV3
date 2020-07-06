@@ -29,6 +29,7 @@
                                     <th style="text-align:center">Tel&eacute;fono</th>
                                     <th data-hide="phone,tablet" style="text-align:center">Total</th>
                                     <th data-hide="phone,tablet" style="text-align:center">Costo env&iacute;o</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Comisi&oacute;n</th>
                                     <th data-hide="phone,tablet" style="text-align: center">Hora despacho aprox.</th>
                                     <th data-hide="phone,tablet" style="text-align:center">Hora despacho real</th>
                                     <th data-hide="phone,tablet" style="text-align:center">Tiempo (min.)</th>
@@ -85,13 +86,13 @@
                         {
                             mostrarNotificacion("Error", data.mensaje);
                             $("#content").waitMe("hide");
-                            setTimeout(function () { pedidosActuales(); }, 50000);
+                            setTimeout(function () { pedidosActuales(); }, 180000);
                         }
 
                     }
                 }, complete: function (data) {
                     $("#content").waitMe("hide");
-                    setTimeout(function(){pedidosActuales();}, 50000);
+                    setTimeout(function(){pedidosActuales();}, 180000);
 
                 },
                 error: function (ex) {
@@ -111,6 +112,7 @@
                 "paging":   false,
                 "ordering": false,
                 "info": false,
+                "scrollX": true,
                  "language": {
                     "emptyTable": "No hay información",
                     "loadingRecords": "Cargando...",
@@ -128,6 +130,10 @@
                     {
                         data: 'shippingValue',
                         render: $.fn.dataTable.render.number( ',', '.', 2,'$' )
+                    },
+                    {
+                        data: 'paymentCharge',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '$')
                     },
                     {
                         data: 'dispatchAproxTime',
@@ -156,19 +162,33 @@
                         render: function (data, type, row) {
 
 
-                            if (row.orderStatus = "Por Pagar") {
+                            if (row.orderStatus == "Por Pagar") {
 
-                                var myUrl = '@Url.Action("ProcesarPedido", "Home")?id=' + data;
-                                return '<a href=\"javascript:void(0);\" class=\"btn btn-primary center fa fa-motorcycle btn-sm\"  onclick = \"ProcesarConEnvio(' + data + ');\"></a> <a href=\"javascript:void(0);\" class=\"btn btn-danger center fa fa-motorcycle btn-sm\"  onclick = \"ProcesarSinEnvio(' + data + ');\"></a>';
+                                var myUrl = '@Url.Action("ProcesarPedidoVer", "Home")?id=' + data;
+                                return '<a href=\"' + myUrl + '\" class=\"btn btn-primary center fa fa-pencil-square-o btn-sm\"  onclick = \"cargando();\"></a>';
+                                //return ''//'<a href=\"javascript:void(0);\" class=\"btn btn-primary center fa fa-motorcycle btn-sm\"  onclick = \"ProcesarConEnvio(' + data + ');\"></a> <a href=\"javascript:void(0);\" class=\"btn btn-danger center fa fa-motorcycle btn-sm\"  onclick = \"ProcesarSinEnvio(' + data + ');\"></a>';
                             } else {
 
-                                if (row.orderStatus != "Pendiente") {
-                                    return '<p></p>';
-
-                                } else {
+                                if (row.orderStatus == "Pendiente") {
                                     var myUrl = '@Url.Action("ProcesarPedido", "Home")?id=' + data;
                                     return '<a href=\"' + myUrl + '\" class=\"btn btn-primary center fa fa-check btn-sm\"  onclick = \"cargando();\"> Procesar</a>';
+
+
                                 }
+
+                                else {
+                                    if (row.orderStatus == "En Proceso" || row.orderStatus == "Despachado" || row.orderStatus == "Entregado" ) {
+                                        var myUrl = '@Url.Action("ProcesarPedidoVer", "Home")?id=' + data;
+                                return '<a href=\"' + myUrl + '\" class=\"btn btn-primary center fa fa-pencil-square-o btn-sm\"  onclick = \"cargando();\"></a>';
+                                    }
+                                     else {
+                                        return '<p></p>';
+                                }
+
+                                }
+
+
+
                             }
                         //return '<a href=\"LinkedAccountsDetails/' + data + '\">Edit</a>';
 

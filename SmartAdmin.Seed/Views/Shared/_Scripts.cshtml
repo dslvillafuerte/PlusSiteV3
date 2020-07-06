@@ -96,6 +96,7 @@
     <!-- Link to ASP.NET CDN's Bootstrap; fall back to local -->
     <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js" asp-fallback-src="~/js/bootstrap/bootstrap.min.js" asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal" crossorigin="anonymous"></script>
 
+    <script src="~/js/waitMe/waitMe.min.js"></script>
     <!-- IMPORTANT: APP CONFIG -->
     <script src="~/js/app.config.min.js"></script>
 
@@ -129,6 +130,17 @@
     <!-- ENHANCEMENT PLUGINS : NOT A REQUIREMENT -->
     <!-- Voice command : plugin -->
     <script src="~/js/speech/voicecommand.min.js"></script>
+
+    <script src="~/js/app/site.js"></script>
+    <script>
+    $(document).ready(function () {
+        pageSetUp();
+        drawBreadCrumb();
+        Gestionar_Msg();
+        initLoadingForm();
+         $.sound_path = "@Url.Content("~/sound/")";
+    });
+    </script>
 
     <!-- SmartChat UI : plugin -->
     <script src="~/js/smart-chat-ui/smart.chat.ui.min.js"></script>

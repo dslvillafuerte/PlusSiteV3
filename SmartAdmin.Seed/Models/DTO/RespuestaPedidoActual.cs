@@ -25,6 +25,10 @@ namespace SistemaPedidos.Models.DTO
         [JsonProperty("shippingValue")]
         public double? valorEnvio { get; set; }
 
+        [JsonProperty("paymentCharge")]
+        public double? paymentCharge { get; set; }
+        
+
         [JsonProperty("orderDate")]
         public string date { get; set; }
 

@@ -25,7 +25,7 @@
                                     <div class="col col-lg-1"></div>
 
                                     <div class="col col-lg-2">
-                                        <label>&nbsp;</label>
+                                       
                                         <a id="btBuscar" onclick="filtrar()" title="Buscar" class="btn btn-default btn-lg btn-circle  fa fa-search fa-lg text-info">
                                         </a>
                                     </div>
@@ -63,6 +63,7 @@
                                     <th style="text-align:center">Tel&eacute;fono</th>
                                     <th data-hide="phone,tablet" style="text-align:center">Total</th>
                                     <th data-hide="phone,tablet" style="text-align:center">Costo env&iacute;o</th>
+                                    <th data-hide="phone,tablet" style="text-align:center">Comisi&oacute;n</th>
                                     <th data-hide="phone,tablet" style="text-align:center">Hora despacho aprox.</th>
                                     <th data-hide="phone,tablet" style="text-align:center">Hora despacho real</th>
                                     <th data-hide="phone,tablet" style="text-align:center">Tiempo (min.)</th>
@@ -166,6 +167,7 @@
                 "paging":   false,
                 "ordering": false,
                 "info": false,
+                 "scrollX": true,
                 "language": {
                     "emptyTable": "No hay información",
                     "loadingRecords": "Cargando...",
@@ -183,6 +185,10 @@
                     {
                         data: 'shippingValue',
                         render: $.fn.dataTable.render.number( ',', '.', 2,'$' )
+                    },
+                    {
+                        data: 'paymentCharge',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '$')
                     },
                     {
                         data: 'dispatchAproxTime',
@@ -210,7 +216,7 @@
                         title: "Opciones",
                         render: function (data, type, row) {
                             var myUrl = '@Url.Action("ProcesarPedidoHistorico", "Home")?id=' + data + '&fecha=' + fechaActual;
-                                return '<a href=\"' + myUrl + '\" class=\"btn btn-primary center fa fa-check btn-sm\"  onclick = \"cargando();\"> Detalle</a>';
+                                return '<a href=\"' + myUrl + '\" class=\"btn btn-primary center fa fa-pencil-square-o btn-sm\"  onclick = \"cargando();\"></a>';
                         }
                     }
                 ]

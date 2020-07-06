@@ -50,12 +50,6 @@
         ]
     },
     {
-        "outputFileName": "wwwroot/js/demo.min.js",
-        "inputFiles": [
-            "wwwroot/js/demo.js"
-        ]
-    },
-    {
         "outputFileName": "wwwroot/js/app.config.min.js",
         "inputFiles": [
             "wwwroot/js/app.config.js"

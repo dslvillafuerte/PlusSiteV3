@@ -252,6 +252,38 @@ namespace SistemaPedidos.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ProcesarPedidoVer(string id)
+        {
+            try
+            {
+                var usuario = HttpContext.Session.GetString("IdEstablecimiento");
+                LoggerBase.WriteLog("Home-ProcesarPedido-GET", "Usuario", "IdEstablecimiento", usuario, TypeError.Info);
+                if (string.IsNullOrEmpty(usuario))
+                {
+                    this.TempData["Mensaje"] = $"{Mensaje.Error}|{"Su sesión ha expirado"}";
+                    return RedirectToAction("Login", "Account");
+                }
+                ViewData["IdAccion"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(LoggerBase.ListaAcciones, "Accion", "AccionNombre");
+                var detalle = await zohoApis.DetallePedido(id);
+
+                if (detalle == null || detalle.orderDetails.Count == 0)
+                {
+                    this.TempData["Mensaje"] = $"{Mensaje.Error}|{"No se encontró detalle del pedido seleccionado"}";
+                    return RedirectToAction("Index", "Home");
+                }
+                 
+
+                return View(new SolicitudProcesarPedido { Id = id, DetallePedidoLista = detalle });
+            }
+            catch (Exception ex)
+            {
+
+                this.TempData["Mensaje"] = $"{Mensaje.Error}|{ex.Message}";
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
         #endregion
 
         #region Reportes

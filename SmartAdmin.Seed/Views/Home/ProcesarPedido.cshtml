@@ -21,8 +21,19 @@
     <div class="col-sm-9">
         <div class="well padding-10">
             <legend><h4>Detalle</h4> </legend>
-            <h5 class="margin-top-0">Nombre:&nbsp;&nbsp;&nbsp;<b>@Model.DetallePedidoLista.customerName</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tel&eacute;fono:&nbsp;&nbsp;&nbsp;<b> @Model.DetallePedidoLista.customerMobile</b></h5><hr />
-            
+            <h7 class="margin-top-0">
+                Nombre:&nbsp;&nbsp;&nbsp;<b>@Model.DetallePedidoLista.customerName</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tel&eacute;fono:&nbsp;&nbsp;&nbsp;<b> @Model.DetallePedidoLista.customerMobile</b>
+
+            </h7><hr />
+            <h7 class="margin-top-0">
+                Identificación:&nbsp;&nbsp;&nbsp;<b>@Model.DetallePedidoLista.customerIdentification</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Email:&nbsp;&nbsp;&nbsp;<b> @Model.DetallePedidoLista.email</b>
+
+            </h7><hr />
+            <h7 class="margin-top-0">
+                Dirección:&nbsp;&nbsp;&nbsp;<b>@Model.DetallePedidoLista.customerAddress</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+
+            </h7><hr />
+
             <div class="row">
                 @foreach (var item in Model.DetallePedidoLista.orderDetails)
                 {

@@ -1346,7 +1346,14 @@ body.smart-style-3,
     border: none;
 }
 
-.smart-style-3 .page-footer,
+.smart-style-3 .page-footer {
+    background-color: #f78c40;
+    background-image: -moz-linear-gradient(top, #f78c40, #d67632);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f78c40), to(#d67632));
+    background-image: -webkit-linear-gradient(top, #f78c40, #d67632);
+    background-image: -o-linear-gradient(top, #f78c40, #d67632);
+    background-image: linear-gradient(to bottom, #f78c40, #d67632);
+}
 .smart-style-3 .superbox-show {
     background: #3D3B39;
 }
