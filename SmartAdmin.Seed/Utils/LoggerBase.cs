@@ -16,6 +16,7 @@ namespace SistemaPedidos.Utilidades
         Info,
         Warning,
         Error,
+
     }
 
 
